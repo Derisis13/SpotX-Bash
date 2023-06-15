@@ -38,13 +38,10 @@ show_version() {
   exit
 }
 
-if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
-  show_help() {
-    echo -e \
-      "Options:
+show_help() {
+	help_txt="Options:
 -c        : clear Spotify app cache
 --disableleftsidebar
---disablemadeforyou
 --disablemadeforyou
 --disablerightsidebar
 --disablesidebarcolors
@@ -53,42 +50,18 @@ if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
 -f        : force SpotX to run
 -h        : print this help message (also --help)
 -i        : enable interactive mode
+-o        : use old home screen UI
+-p        : set if paid premium-tier subscriber
+-P [path] : set path to Spotify
+-r        : remove non-music categories on home screen
+-U        : uninstall SpotX
+-v        : print SpotX version (also --version)"
+	[[ ${PLATFORM_TYPE} == "macOS" ]] && help_txt="${help_txt}
 --installclient
--o        : use old home screen UI
--p        : set if paid premium-tier subscriber
--P [path] : set path to Spotify
--r        : remove non-music categories on home screen
---skipcodesign
--u        : block Spotify updates
--U        : uninstall SpotX
--v        : print SpotX version (also --version)
-"
-    exit
-  }
-else
-  show_help() {
-    echo -e \
-      "Options:
--c        : clear Spotify app cache
---disableleftsidebar
---disablemadeforyou
---disablerightsidebar
---disablesidebarcolors
---disablesidebarlyrics
--e        : exclude all experimental features
--f        : force SpotX to run
--h        : print this help message (also --help)
--i        : enable interactive mode
--o        : use old home screen UI
--p        : set if paid premium-tier subscriber
--P [path] : set path to Spotify
--r        : remove non-music categories on home screen
--U        : uninstall SpotX
--v        : print SpotX version (also --version)
-"
-    exit
-  }
-fi
+--skipcodesign"
+	printf '%s' "$help_txt"
+	exit
+}
 
 while getopts 'ceF:fhioP:prUuv-:' flag; do
   case "${flag}" in
@@ -147,7 +120,7 @@ while getopts 'ceF:fhioP:prUuv-:' flag; do
   esac
 done
 
-SXB_LIVE="$(curl -sL $(echo "=g2cugHdvB3cvcXYy9SMidjZ0QzMkRTOwMWZlVTMmRTY2EmYlRGOmNGMzgDOl9yMylmZ0Vmav02bj5iY1hGdpdmL0NXan9yL6MHc0RHa" | rev | base64 --decode) | grep "g>" | cut -d ' ' -f12- 2>/dev/null)"
+SXB_LIVE="$(curl -sL "$(echo "=g2cugHdvB3cvcXYy9SMidjZ0QzMkRTOwMWZlVTMmRTY2EmYlRGOmNGMzgDOl9yMylmZ0Vmav02bj5iY1hGdpdmL0NXan9yL6MHc0RHa" | rev | base64 --decode)" | grep "g>" | cut -d ' ' -f12- 2>/dev/null)"
 VERSION_CK1="==gbcxFazFmY4R3bwN3LkdmLzlGIABSZsJWYslWY2FGIzlGI9JVQFx0Q7RiI9VkVJx0XCh1U7RiI95URFJ1R7RCIu9WazJXZW5GXc5CZlRXYkRXdvBycpBCazFmQtgFdvB3UgY2bg42bpNnclZHIzlGaUBSfSFURMN0ekozZulmbyF2V9d1TMxURZtHJ"
 VERSION_CK2=$(echo ${VERSION_CK1} | rev | base64 --decode)
 VERSION_CK3=$(eval echo "${VERSION_CK2}")
