@@ -39,7 +39,7 @@ show_version() {
 }
 
 show_help() {
-	help_txt="Options:
+  help_txt="Options:
 -c        : clear Spotify app cache
 --disableleftsidebar
 --disablemadeforyou
@@ -56,11 +56,11 @@ show_help() {
 -r        : remove non-music categories on home screen
 -U        : uninstall SpotX
 -v        : print SpotX version (also --version)"
-	[[ ${PLATFORM_TYPE} == "macOS" ]] && help_txt="${help_txt}
+  [[ ${PLATFORM_TYPE} == "macOS" ]] && help_txt="${help_txt}
 --installclient
 --skipcodesign"
-	printf '%s' "$help_txt"
-	exit
+  printf '%s' "$help_txt"
+  exit
 }
 
 while getopts 'ceF:fhioP:prUuv-:' flag; do
@@ -384,7 +384,7 @@ if [[ ${UNINSTALL_FLAG} == "true" ]]; then
     if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
       codesign -f -s - --deep "${APP_PATH}" 2>/dev/null
     fi
-    perl -e 'print "\xE2\x9C\x94\x20\x46\x69\x6E\x69\x73\x68\x65\x64\x20\x75\x6E\x69\x6E\x73\x74\x61\x6C\x6C\n"'
+    printf '✔ Finished uninstall\n'
     exit
   fi
 fi
@@ -401,7 +401,7 @@ read_yn() {
 }
 
 if [[ ${INTERACTIVE_FLAG} == "true" ]]; then
-  perl -e 'print "\xE2\x9C\x94\x20\x53\x74\x61\x72\x74\x65\x64\x20\x69\x6E\x74\x65\x72\x61\x63\x74\x69\x76\x65\x20\x6D\x6F\x64\x65\x20\x5B\x65\x6E\x74\x65\x72\x20\x79\x2F\x6E\x5D\n"'
+  printf '✔ Started interactive mode [enter y/n]\n'
   if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
     if read_yn "Download & install Spotify ${SXB_VERSION}? "; then
       INSTALLCLIENT_OPT='true'
@@ -467,7 +467,7 @@ if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
       echo -e "\n${RED}Error:${CLEAR} Client download failed. Exiting...\n"
       exit 1
     }
-    perl -e 'print "\xE2\x9C\x94\x20\x44\x6F\x77\x6E\x6C\x6F\x61\x64\x65\x64\x20\x61\x6E\x64\x20\x69\x6E\x73\x74\x61\x6C\x6C\x69\x6E\x67\x20\x53\x70\x6F\x74\x69\x66\x79\n"'
+    printf '✔ Downloaded and installing Spotify\n'
     rm -rf "${APP_PATH}" 2>/dev/null
     mkdir "${APP_PATH}"
     tar -xpjf ~/Downloads/spotify-$SXB_VERSION -C "${APP_PATH}" || {
@@ -475,7 +475,7 @@ if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
       rm "${HOME}/Downloads/spotify-$SXB_VERSION" 2>/dev/null
       exit 1
     }
-    perl -e 'print "\xE2\x9C\x94\x20\x49\x6E\x73\x74\x61\x6C\x6C\x65\x64\x20\x69\x6E\x20' "${INSTALL_PATH}" '\n"'
+    printf '✔ Installed in %s\n' "$INSTALL_PATH"
     rm "${HOME}/Downloads/spotify-$SXB_VERSION"
     CLIENT_VERSION="${SXB_VERSION}"
   else
@@ -500,7 +500,7 @@ else
   fi
   if [[ ${FORCE_SPOTX_FLAG} == "false" ]]; then
     if [[ -f ${XPUI_BAK} ]] || [[ -f ${APP_BAK} ]]; then
-      perl -e 'print "\xE2\x9C\x94\x20\x44\x65\x74\x65\x63\x74\x65\x64\x20\x62\x61\x63\x6B\x75\x70\n"'
+      printf '✔ Detected backup\n'
       echo -e "${YELLOW}Warning:${CLEAR} SpotX has already been installed."
       echo -e "Use the '-f' flag to force SpotX to run.\n"
       XPUI_SKIP="true"
@@ -508,7 +508,7 @@ else
       cp "${XPUI_SPA}" "${XPUI_BAK}"
       cp "${APP_BINARY}" "${APP_BAK}"
       XPUI_SKIP="false"
-      perl -e 'print "\xE2\x9C\x94\x20\x43\x72\x65\x61\x74\x65\x64\x20\x62\x61\x63\x6B\x75\x70\n"'
+      printf '✔ Created backup\n'
     fi
   else
     if [[ -f ${XPUI_BAK} ]]; then
@@ -517,12 +517,12 @@ else
       rm "${APP_BINARY}" 2>/dev/null
       cp "${APP_BAK}" "${APP_BINARY}"
       XPUI_SKIP="false"
-      perl -e 'print "\xE2\x9C\x94\x20\x44\x65\x74\x65\x63\x74\x65\x64\x20\x26\x20\x72\x65\x73\x74\x6F\x72\x65\x64\x20\x62\x61\x63\x6B\x75\x70\n"'
+      printf "✔ Detected & restored backup\n"
     else
       cp "${XPUI_SPA}" "${XPUI_BAK}"
       cp "${APP_BINARY}" "${APP_BAK}"
       XPUI_SKIP="false"
-      perl -e 'print "\xE2\x9C\x94\x20\x43\x72\x65\x61\x74\x65\x64\x20\x62\x61\x63\x6B\x75\x70\n"'
+      printf "✔ Detected & restored backup\n"
     fi
   fi
 fi
@@ -566,14 +566,14 @@ if [[ ${XPUI_SKIP} == "false" ]]; then
     elif [[ $(ver "${CLIENT_VERSION}") -gt $(ver "1.1.96.783") ]]; then
       $PERL "${CONNECT_NEW}" "${XPUI_JS}"
     fi
-    perl -e 'print "\xE2\x9C\x94\x20\x42\x6C\x6F\x63\x6B\x65\x64\x20\x61\x75\x64\x69\x6F\x2C\x20\x62\x61\x6E\x6E\x65\x72\x20\x26\x20\x76\x69\x64\x65\x6F\x20\x61\x64\x73\n"'
+    printf '✔ Blocked audio, banner & video ads\n'
   else
-    perl -e 'print "\xE2\x9C\x94\x20\x44\x65\x74\x65\x63\x74\x65\x64\x20\x70\x72\x65\x6D\x69\x75\x6D\x2D\x74\x69\x65\x72\x20\x70\x6C\x61\x6E\n"'
+    printf '✔ Detected premium-tier plan\n'
     $PERL "${AD_SLOT}" "${APP_BINARY}"
-    perl -e 'print "\xE2\x9C\x94\x20\x42\x6C\x6F\x63\x6B\x65\x64\x20\x70\x6F\x64\x63\x61\x73\x74\x20\x61\x64\x73\n"'
+    printf '✔ Blocked podcast ads\n'
   fi
   if [[ ${EXCLUDE_EXPERIMENTAL_FLAG} == "true" ]]; then
-    perl -e 'print "\xE2\x9C\x94\x20\x53\x6B\x69\x70\x70\x65\x64\x20\x65\x78\x70\x65\x72\x69\x6D\x65\x6E\x74\x61\x6C\x20\x66\x65\x61\x74\x75\x72\x65\x73\n"'
+    printf '✔ Skipped experimental features\n'
   else
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.6.861") ]] && $PERL "${ENABLE_ADD_PLAYLIST}" "${XPUI_JS}"
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.99.871") ]] && $PERL "${ENABLE_ATTACK_ON_TITAN_EASTER_EGG}" "${XPUI_JS}"
@@ -622,18 +622,18 @@ if [[ ${XPUI_SKIP} == "false" ]]; then
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.87.612") ]] && $PERL "${ENABLE_USER_PROFILE_EDIT}" "${XPUI_JS}"             #confirm versions supported
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.9.739") ]] && $PERL "${ENABLE_YLX_Typeahead_Search}" "${XPUI_JS}"
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.5.954") ]] && $PERL "${ENABLE_YOUR_DJ}" "${XPUI_JS}"
-    perl -e 'print "\xE2\x9C\x94\x20\x45\x6E\x61\x62\x6C\x65\x64\x20\x65\x78\x70\x65\x72\x69\x6D\x65\x6E\x74\x61\x6C\x20\x66\x65\x61\x74\x75\x72\x65\x73\n"'
+    printf '✔ Enabled experimental features\n'
   fi
   if [[ ${OLD_UI_FLAG} == "false" && $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.93.896") && ${EXCLUDE_EXPERIMENTAL_FLAG} == "false" ]]; then
     [[ $(ver "${CLIENT_VERSION}") -gt $(ver "1.1.93.896") && $(ver "${CLIENT_VERSION}") -lt $(ver "1.1.97.956") ]] && $PERL "${NEW_UI}" "${XPUI_JS}"
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.97.956") && $(ver "${CLIENT_VERSION}") -lt $(ver "1.2.3.1107") ]] && $PERL "${NEW_UI_2}" "${XPUI_JS}"
     if [[ ${DISABLELEFTSIDEBAR_OPT} == "true" ]]; then
-      perl -e 'print "\xE2\x9C\x94\x20\x44\x69\x73\x61\x62\x6C\x65\x64\x20\x6C\x65\x66\x74\x20\x73\x69\x64\x65\x62\x61\x72\n"'
+      printf '✔ Disabled left sidebar\n'
     elif [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.97.962") ]]; then
       $PERL "${ENABLE_LEFT_SIDEBAR}" "${XPUI_JS}"
     fi
     if [[ ${DISABLERIGHTSIDEBAR_OPT} == "true" ]]; then
-      perl -e 'print "\xE2\x9C\x94\x20\x44\x69\x73\x61\x62\x6C\x65\x64\x20\x72\x69\x67\x68\x74\x20\x73\x69\x64\x65\x62\x61\x72\n"'
+      printf '✔ Disabled right sidebar\n'
     elif [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.98.683") ]]; then
       $PERL "${ENABLE_RIGHT_SIDEBAR}" "${XPUI_JS}"
       if [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.7.1264") ]]; then
@@ -643,32 +643,32 @@ if [[ ${XPUI_SKIP} == "false" ]]; then
       fi
     fi
     if [[ ${DISABLESIDEBARCOLORS_OPT} == "true" ]]; then
-      perl -e 'print "\xE2\x9C\x94\x20\x44\x69\x73\x61\x62\x6C\x65\x64\x20\x73\x69\x64\x65\x62\x61\x72\x20\x63\x6F\x6C\x6F\x72\x73\n"'
+      printf '✔ Disabled sidebar colors\n'
     elif [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.0.1165") ]]; then
       $PERL "${ENABLE_RIGHT_SIDEBAR_COLORS}" "${XPUI_JS}"
     fi
     if [[ ${DISABLESIDEBARLYRICS_OPT} == "true" ]]; then
-      perl -e 'print "\xE2\x9C\x94\x20\x44\x69\x73\x61\x62\x6C\x65\x64\x20\x73\x69\x64\x65\x62\x61\x72\x20\x6C\x79\x72\x69\x63\x73\n"'
+      printf '✔ Disabled sidebar lyrics\n'
     else
       [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.0.1165") ]] && $PERL "${ENABLE_RIGHT_SIDEBAR_LYRICS}" "${XPUI_JS}"
       [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.2.7.1264") ]] && $PERL "${ENABLE_PANEL_SIZE_COORDINATION}" "${XPUI_JS}"
     fi
-    perl -e 'print "\xE2\x9C\x94\x20\x45\x6E\x61\x62\x6C\x65\x64\x20\x6E\x65\x77\x20\x55\x49\n"'
+    printf '✔ Enabled new UI\n'
   elif [[ ${OLD_UI_FLAG} == "true" && $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.93.896") ]]; then
-    perl -e 'print "\xE2\x9C\x94\x20\x45\x6E\x61\x62\x6C\x65\x64\x20\x6F\x6C\x64\x20\x55\x49\n"'
+    printf '✔ Enabled old UI\n'
   fi
   if [[ ${REMOVE_PODCASTS_FLAG} == "true" ]]; then
     [[ $(ver "${CLIENT_VERSION}") -lt $(ver "1.1.93.896") ]] && $PERL "${HIDE_PODCASTS}" "${XPUI_JS}"
     [[ $(ver "${CLIENT_VERSION}") -ge $(ver "1.1.93.896") ]] && $PERL "${HIDE_PODCASTS2}" "${XPUI_JS}"
-    perl -e 'print "\xE2\x9C\x94\x20\x52\x65\x6D\x6F\x76\x65\x64\x20\x6E\x6F\x6E\x2D\x6D\x75\x73\x69\x63\x20\x63\x61\x74\x65\x67\x6F\x72\x69\x65\x73\x20\x6F\x6E\x20\x68\x6F\x6D\x65\x20\x73\x63\x72\x65\x65\x6E\n"'
+    printf '✔ Removed non-music categories on home screen\n'
   fi
   $PERL "${LOG_1}" "${XPUI_JS}"
   $PERL "${LOG_SENTRY}" "${VENDOR_XPUI_JS}"
-  perl -e 'print "\xE2\x9C\x94\x20\x52\x65\x6D\x6F\x76\x65\x64\x20\x6C\x6F\x67\x67\x69\x6E\x67\n"'
+  printf '✔ Removed logging\n'
   if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
     if [[ ${UPDATE_FLAG} == "true" ]]; then
       $PERL "${UPDATE_BLOCK}" "${APP_BINARY}"
-      perl -e 'print "\xE2\x9C\x94\x20\x42\x6C\x6F\x63\x6B\x65\x64\x20\x61\x75\x74\x6F\x6D\x61\x74\x69\x63\x20\x75\x70\x64\x61\x74\x65\x73\n"'
+      printf '✔ Blocked automatic updates\n'
     fi
     xattr -cr "${APP_PATH}"
   fi
@@ -676,7 +676,7 @@ fi
 
 if [[ ${CACHE_FLAG} == "true" ]]; then
   rm -rf "${CACHE_PATH}"
-  perl -e 'print "\xE2\x9C\x94\x20\x43\x6C\x65\x61\x72\x65\x64\x20\x61\x70\x70\x20\x63\x61\x63\x68\x65\n"'
+  printf '✔ Cleared app cache\n'
 fi
 
 if [[ ${XPUI_SKIP} == "false" ]]; then
@@ -691,10 +691,10 @@ if [[ ${XPUI_SKIP} == "false" ]]; then
   if [[ ${PLATFORM_TYPE} == "macOS" ]]; then
     if [[ ${SKIPCODESIGN_OPT} == "false" ]]; then
       codesign -f -s - --deep "${APP_PATH}" 2>/dev/null
-      perl -e 'print "\xE2\x9C\x94\x20\x43\x6F\x64\x65\x73\x69\x67\x6E\x65\x64\x20\x53\x70\x6F\x74\x69\x66\x79\n"'
+      printf '✔ Codesigned Spotify\n'
     fi
     xattr -cr "${APP_PATH}" 2>/dev/null
   fi
 fi
 
-perl -e 'print "\xE2\x9C\x94\x20\x46\x69\x6E\x69\x73\x68\x65\x64\n\n"'
+printf '✔ Finished\n\n'
